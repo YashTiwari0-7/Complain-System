@@ -1,7 +1,41 @@
 const Complaint = require("../models/Complaint");
 
-// Submit Complaint
+exports.adminLogin = async (req, res) => {
+  try {
+    const { adminId, password } = req.body;
+    
+    if (!adminId || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Admin ID and Password are required"
+      });
+    }
 
+    // Hardcoded credentials (for hackathon demo)
+    const validAdminId = "admin123";
+    const validPassword = "password123";
+
+    if (adminId !== validAdminId || password !== validPassword) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Login successful"
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server Error"
+    });
+  }
+};
+
+// Submit Complaint
 exports.submitComplaint = async (req, res) => {
     console.log("Incoming Body:", req.body);
   try {
@@ -46,7 +80,20 @@ exports.submitComplaint = async (req, res) => {
 // Get All Complaints
 exports.getAllComplaints = async (req, res) => {
   try {
-    const complaints = await Complaint.find().sort({ createdAt: -1 });
+    const { status, rollNo } = req.query;
+
+    let filter = {};
+
+    if (status && status !== "all") {
+      filter.status = status;
+    }
+
+    if (rollNo) {
+      filter.rollNo = { $regex: rollNo, $options: "i" };
+    }
+
+    const complaints = await Complaint.find(filter)
+      .sort({ createdAt: -1 });
 
     const formatted = complaints.map(c => ({
       id: c._id,
@@ -58,13 +105,10 @@ exports.getAllComplaints = async (req, res) => {
       date: c.createdAt
     }));
 
-    res.status(200).json(formatted);
+    res.json(formatted);
 
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Server Error"
-    });
+    res.status(500).json({ message: "Server Error" });
   }
 };
 
@@ -124,5 +168,46 @@ exports.getAdminStats = async (req, res) => {
 
   } catch (error) {
     res.status(500).json({ message: "Server Error" });
+  }
+};
+
+// Stuent Login (Optional - for future authentication implementation)
+
+exports.studentLogin = async (req, res) => {
+  try {
+    const { rollNo, dob, mobile } = req.body;
+
+    if (!rollNo || !dob || !mobile) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required"
+      });
+    }
+
+    // Basic validation
+    if (!/^\d{10}$/.test(mobile)) {
+      return res.status(400).json({
+        success: false,
+        message: "Mobile number must be 10 digits"
+      });
+    }
+
+    // Demo mode login (since no student DB exists)
+    // In real system, you would check DB here
+
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      student: {
+        rollNo,
+        studentName: "Student " + rollNo.slice(-3) // temporary mock
+      }
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server Error"
+    });
   }
 };
