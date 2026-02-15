@@ -1,0 +1,107 @@
+/* --- Core Layout --- */
+.full-height {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.bg-light-grey {
+    background-color: #f8fafc;
+}
+
+/* Centers the card in the middle of the screen */
+.login-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* RESTRICTED WIDTH: Prevents the card from going full-width */
+.login-card {
+    background: #ffffff;
+    width: 100%;
+    max-width: 400px; /* This keeps it the 'previous' small size */
+    padding: 40px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+}
+
+/* --- Navigation Button --- */
+.btn-back {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #ffffff;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.btn-back:hover {
+    background-color: #f1f5f9;
+    color: #2563eb;
+    border-color: #cbd5e1;
+}
+
+/* --- Form Elements --- */
+.form-group {
+    margin-bottom: 20px;
+    text-align: left; /* Ensures labels stay left-aligned */
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #334155;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    outline: none;
+}
+
+.form-group input:focus {
+    border-color: #2563eb;
+}
+
+/* --- Centered Smaller Submit Button --- */
+.submit-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 25px;
+}
+
+.btn-submit {
+    width: 150px;       /* Smaller width */
+    height: 50px;      /* Taller height */
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-submit:hover {
+    background-color: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+/* Footer Section */
+.login-footer {
+    margin-top: 25px;
+    text-align: center;
+    font-size: 0.85rem;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 20px;
+}

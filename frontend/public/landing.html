@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elevare Campus | Student Grievance Platform</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="logo">Elevare Campus</div>
+            
+            <ul class="nav-links" id="navLinks">
+                <li><a href="Admin/adminLogin.html" class="admin-link">Admin Portal</a></li>
+                <li><a href="student/studentLogin.html" class="login-btn">Login</a></li>
+            </ul>
+
+            <div class="hamburger" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container hero-grid">
+            <div class="hero-content">
+                <h1>Your Voice Matters. <br><span class="highlight">We Help It Reach the Right Place.</span></h1>
+                <p>Elevare Campus provides a transparent, secure, and structured environment for students to voice concerns. Track your grievances in real-time and ensure feedback reaches administration without delays.</p>
+                <div class="hero-btns">
+                    <a href="student/studentLogin.html" class="btn btn-primary">Get Started</a>
+                    <a href="Admin/adminLogin.html" class="btn btn-secondary">Admin Access</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <div class="dot"></div>
+                        <div class="status-pill">In Review</div>
+                    </div>
+                    <div class="skeleton-line long"></div>
+                    <div class="skeleton-line med"></div>
+                    <div class="skeleton-line short"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Built to Simplify Campus Communication</h2>
+                <p>Professional grievance management for the modern student body.</p>
+            </div>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="icon">📝</div>
+                    <h3>Clear & Structured Submissions</h3>
+                    <p>Categorize your concerns to ensure they are routed to the specific department equipped to handle them immediately.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">🔍</div>
+                    <h3>Transparent Tracking</h3>
+                    <p>No more black holes. View the status of your complaint, who is reviewing it, and estimated resolution timelines.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">⚖️</div>
+                    <h3>Fair & Accountable Resolution</h3>
+                    <p>Our standardized process ensures every student is treated with equity and every department is held accountable.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta">
+        <div class="container">
+            <h2>Ready to Make Your Voice Heard?</h2>
+            <a href="student/studentLogin.html" class="btn btn-primary lg">Login to Get Started</a>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-col">
+                <h4>About</h4>
+                <ul>
+                    <li><a href="#">University Mission</a></li>
+                    <li><a href="#">Our Platform</a></li>
+                    <li><a href="#">Ethics & Privacy</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Platform</h4>
+                <ul>
+                    <li><a href="#">Submit Complaint</a></li>
+                    <li><a href="#">Status Tracker</a></li>
+                    <li><a href="#">Admin Dashboard</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Submit Feedback</a></li>
+                    <li><a href="#">Terms of Use</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <p>support@elevarecampus.edu</p>
+                <p>University Main Admin Block</p>
+                <p>Varanasi, UP</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Elevare Campus. Academic Excellence & Accountability.</p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            const nav = document.getElementById('navLinks');
+            nav.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>

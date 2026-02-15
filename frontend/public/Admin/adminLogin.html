@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login | Elevare Campus</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="adminLogin.css">
+</head>
+<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-md">
+        <div class="text-center mb-8">
+            <span class="text-3xl font-extrabold text-blue-600 tracking-tighter">Elevare Campus</span>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+            <div class="mb-8">
+                <h1 class="text-2xl font-bold text-slate-900">Admin Portal Login</h1>
+                <p class="text-slate-500 text-sm mt-1">Authorized access only</p>
+            </div>
+
+            <form id="adminLoginForm" class="space-y-6">
+                <div class="space-y-2">
+                    <label for="adminId" class="block text-sm font-semibold text-slate-700">Admin ID</label>
+                    <input type="text" id="adminId" name="adminId" required 
+                           placeholder="Enter your unique ID" 
+                           class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all">
+                </div>
+
+                <div class="space-y-2">
+                    <label for="password" class="block text-sm font-semibold text-slate-700">Password</label>
+                    <input type="password" id="password" name="password" required 
+                           placeholder="••••••••" 
+                           class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all">
+                </div>
+
+                <div id="errorMessage" class="hidden text-sm font-medium text-red-600 bg-red-50 p-3 rounded-lg text-center"></div>
+
+                <button type="submit" id="loginBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-lg shadow-lg shadow-blue-200 transition-all flex items-center justify-center gap-2">
+                    <span id="btnText">Login to Dashboard</span>
+                    <div id="loader" class="hidden w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                </button>
+            </form>
+        </div>
+
+        <p class="text-center text-slate-400 text-xs mt-8">
+            &copy; 2026 Elevare Campus Admin System. Secure Infrastructure.
+        </p>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('adminLoginForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const btnText = document.getElementById('btnText');
+        const loader = document.getElementById('loader');
+        const errorMessage = document.getElementById('errorMessage');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // UI Reset
+            errorMessage.classList.add('hidden');
+            const adminId = document.getElementById('adminId').value.trim();
+            const password = document.getElementById('password').value;
+
+            // Simple Validation
+            if (!adminId || !password) {
+                showError("Please fill in all fields.");
+                return;
+            }
+
+            // Loading State
+            setLoading(true);
+
+            try {
+                const response = await fetch('http://localhost:5000/api/admin-login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ adminId, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('adminId', adminId);
+                    window.location.href = 'admin-dashboard.html';
+                } else {
+                    showError(data.message || "Invalid credentials. Access denied.");
+                }
+            } catch (err) {
+                showError("Connection error. Ensure the server is running.");
+            } finally {
+                setLoading(false);
+            }
+        });
+
+        function showError(msg) {
+            errorMessage.textContent = msg;
+            errorMessage.classList.remove('hidden');
+        }
+
+        function setLoading(isLoading) {
+            if (isLoading) {
+                loginBtn.disabled = true;
+                btnText.textContent = "Verifying...";
+                loader.classList.remove('hidden');
+                loginBtn.classList.add('opacity-80', 'cursor-not-allowed');
+            } else {
+                loginBtn.disabled = false;
+                btnText.textContent = "Login to Dashboard";
+                loader.classList.add('hidden');
+                loginBtn.classList.remove('opacity-80', 'cursor-not-allowed');
+            }
+        }
+    </script>
+</body>
+</html>

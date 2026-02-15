@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Elevare Campus</title>
+    <link rel="stylesheet" href="ad_portal.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-left">
+            <span class="logo">Elevare Campus <small>Admin</small></span>
+        </div>
+        <div class="nav-right">
+            <div class="user-profile" onclick="toggleUserDropdown()">
+                <div class="avatar">AD</div>
+                <span class="admin-name">Administrator</span>
+                <div id="userDropdown" class="dropdown-content">
+                    <a href="#">My Profile</a>
+                    <a href="#" onclick="handleLogout()">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="layout-wrapper">
+        <aside class="sidebar">
+            <ul class="menu">
+                <li class="active"><a href="#">Dashboard</a></li>
+                <li><a href="#">Profile</a></li>
+                <li><a href="#">Complaints</a></li>
+                <li class="logout-item"><a href="#" onclick="handleLogout()">Logout</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <header class="content-header">
+                <h1>Administrative Overview</h1>
+                <p>Monitor and resolve student grievances.</p>
+            </header>
+
+            <section class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <span class="label">Total Complaints</span>
+                    <span class="value" id="stat-total">0</span>
+                </div>
+                <div class="stat-card pending">
+                    <span class="label">Pending</span>
+                    <span class="value" id="stat-pending">0</span>
+                </div>
+                <div class="stat-card in-progress">
+                    <span class="label">In Progress</span>
+                    <span class="value" id="stat-progress">0</span>
+                </div>
+                <div class="stat-card resolved">
+                    <span class="label">Resolved</span>
+                    <span class="value" id="stat-resolved">0</span>
+                </div>
+            </section>
+
+            <section class="table-controls">
+                <div class="search-box">
+                    <input type="text" id="searchRoll" placeholder="Search by Roll No..." oninput="filterComplaints()">
+                </div>
+                <div class="filter-box">
+                    <select id="filterStatus" onchange="filterComplaints()">
+                        <option value="all">All Status</option>
+                        <option value="Pending">Pending</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Resolved">Resolved</option>
+                    </select>
+                </div>
+            </section>
+
+            <section class="table-container">
+                <table id="complaintsTable">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Student</th>
+                            <th>Roll No</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="complaintsBody">
+                        </tbody>
+                </table>
+                <div id="loader" class="loader">Loading complaints...</div>
+                <div id="emptyState" class="empty-state" style="display: none;">No complaints found.</div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        let allComplaints = [];
+
+        async function fetchStats() {
+            try {
+                const res = await fetch('http://localhost:5000/api/admin/stats');
+                const data = await res.json();
+                document.getElementById('stat-total').innerText = data.total || 0;
+                document.getElementById('stat-pending').innerText = data.pending || 0;
+                document.getElementById('stat-progress').innerText = data.inProgress || 0;
+                document.getElementById('stat-resolved').innerText = data.resolved || 0;
+            } catch (err) { console.error("Stats Fetch Error", err); }
+        }
+
+        async function fetchComplaints() {
+            const loader = document.getElementById('loader');
+            const emptyState = document.getElementById('emptyState');
+            loader.style.display = 'block';
+            
+            try {
+                const res = await fetch('http://localhost:5000/api/complaints');
+                allComplaints = await res.json();
+                allComplaints.sort((a, b) => new Date(b.date) - new Date(a.date));
+                renderTable(allComplaints);
+            } catch (err) {
+                console.error("Complaints Fetch Error", err);
+                emptyState.style.display = 'block';
+                emptyState.innerText = "Error loading data.";
+            } finally {
+                loader.style.display = 'none';
+            }
+        }
+
+        function renderTable(data) {
+            const body = document.getElementById('complaintsBody');
+            const emptyState = document.getElementById('emptyState');
+            body.innerHTML = '';
+
+            if (data.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            }
+            emptyState.style.display = 'none';
+
+            data.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${item.title}</strong></td>
+                    <td>${item.studentName}</td>
+                    <td>${item.rollNo}</td>
+                    <td>${item.category}</td>
+                    <td><span class="badge ${item.status.toLowerCase().replace(' ', '-')}">${item.status}</span></td>
+                    <td>${new Date(item.date).toLocaleDateString()}</td>
+                    <td>
+                        <select onchange="updateStatus('${item.id}', this.value)" class="status-select">
+                            <option value="Pending" ${item.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                            <option value="In Progress" ${item.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                            <option value="Resolved" ${item.status === 'Resolved' ? 'selected' : ''}>Resolved</option>
+                        </select>
+                    </td>
+                `;
+                body.appendChild(tr);
+            });
+        }
+
+        async function updateStatus(id, newStatus) {
+            try {
+                const res = await fetch(`http://localhost:5000/api/update-status/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                if (res.ok) {
+                    fetchStats();
+                    fetchComplaints();
+                }
+            } catch (err) { alert("Update failed"); }
+        }
+
+        function filterComplaints() {
+            const rollQuery = document.getElementById('searchRoll').value.toLowerCase();
+            const statusFilter = document.getElementById('filterStatus').value;
+
+            const filtered = allComplaints.filter(item => {
+                const matchRoll = item.rollNo.toLowerCase().includes(rollQuery);
+                const matchStatus = statusFilter === 'all' || item.status === statusFilter;
+                return matchRoll && matchStatus;
+            });
+            renderTable(filtered);
+        }
+
+        function toggleUserDropdown() {
+            document.getElementById('userDropdown').classList.toggle('show');
+        }
+
+        function handleLogout() {
+            localStorage.clear();
+            window.location.href = 'adminLogin.html';
+        }
+
+        window.onload = () => {
+            fetchStats();
+            fetchComplaints();
+        };
+    </script>
+</body>
+</html>

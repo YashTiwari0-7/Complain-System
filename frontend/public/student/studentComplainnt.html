@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raise Complaint | Elevare Campus</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="studentComplaint.css">
+</head>
+<body class="bg-dashboard min-h-screen">
+
+    <main class="content-area">
+        <div class="max-w-2xl mx-auto">
+            <div class="mb-6">
+                <h1 class="text-2xl font-bold text-slate-900">Raise New Complaint</h1>
+                <p class="text-slate-500">Provide accurate details to help us resolve your issue faster.</p>
+            </div>
+
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                <form id="complaintForm" class="p-8 space-y-6">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="form-label-styled">Student Name</label>
+                            <input type="text" value="Abhishek Kumar" disabled class="form-input-disabled">
+                        </div>
+                        <div>
+                            <label class="form-label-styled">Roll Number</label>
+                            <input type="text" value="210054010001" disabled class="form-input-disabled">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="title" class="form-label-styled">Complaint Title <span class="text-red-500">*</span></label>
+                        <input type="text" id="title" name="title" maxlength="100" required 
+                               placeholder="Brief summary of the issue" class="form-input-styled">
+                    </div>
+
+                    <div>
+                        <label for="category" class="form-label-styled">Category <span class="text-red-500">*</span></label>
+                        <select id="category" name="category" required class="form-input-styled">
+                            <option value="">Select Category</option>
+                            <option value="Hostel">Hostel</option>
+                            <option value="Lab">Lab</option>
+                            <option value="Faculty">Faculty</option>
+                            <option value="Campus">Campus</option>
+                            <option value="Canteen">Canteen</option>
+                            <option value="Classroom">Classroom</option>
+                            <option value="Management Work">Management Work</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label for="description" class="form-label-styled">Description <span class="text-red-500">*</span></label>
+                            <span id="wordCountDisplay" class="text-xs font-medium text-slate-400">0 / 500 words</span>
+                        </div>
+                        <textarea id="description" name="description" rows="6" required 
+                                  placeholder="Describe your grievance in detail..." class="form-input-styled resize-none"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="form-label-styled">Evidence / Photo (Optional)</label>
+                        <div class="mt-2 flex items-center gap-4">
+                            <label for="photo" class="cursor-pointer bg-gray-50 border-2 border-dashed border-gray-200 rounded-lg px-4 py-2 hover:bg-gray-100 transition flex items-center gap-2 text-sm text-slate-600">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                Choose File
+                            </label>
+                            <input type="file" id="photo" name="photo" accept="image/*" class="hidden">
+                            <div id="imagePreviewContainer" class="hidden">
+                                <img id="imagePreview" src="#" alt="Preview" class="w-12 h-12 rounded object-cover border">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="formFeedback" class="hidden p-4 rounded-lg text-sm font-medium"></div>
+
+                    <div class="pt-4 border-t border-gray-100 flex justify-end">
+                        <button type="submit" id="submitBtn" class="btn-raise px-10">Submit Complaint</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const form = document.getElementById('complaintForm');
+        const description = document.getElementById('description');
+        const wordCountDisplay = document.getElementById('wordCountDisplay');
+        const photoInput = document.getElementById('photo');
+        const previewContainer = document.getElementById('imagePreviewContainer');
+        const previewImg = document.getElementById('imagePreview');
+        const feedback = document.getElementById('formFeedback');
+
+        // Word Counter Logic
+        description.addEventListener('input', () => {
+            const words = description.value.trim().split(/\s+/).filter(word => word.length > 0);
+            const count = words.length;
+            wordCountDisplay.textContent = `${count} / 500 words`;
+            
+            if (count > 500) {
+                wordCountDisplay.classList.add('text-red-500');
+            } else {
+                wordCountDisplay.classList.remove('text-red-500');
+            }
+        });
+
+        // Image Preview
+        photoInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    previewImg.src = e.target.result;
+                    previewContainer.classList.remove('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Form Submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const words = description.value.trim().split(/\s+/).filter(word => word.length > 0);
+            if (words.length > 500) {
+                alert("Please reduce your description to under 500 words.");
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Processing...";
+
+            const hasFile = photoInput.files.length > 0;
+            let body;
+            let headers = {};
+
+            if (hasFile) {
+                body = new FormData(form);
+            } else {
+                const formData = new FormData(form);
+                body = JSON.stringify(Object.fromEntries(formData));
+                headers['Content-Type'] = 'application/json';
+            }
+
+            try {
+                const response = await fetch('http://localhost:5000/api/submit-complaint', {
+                    method: 'POST',
+                    headers: headers,
+                    body: body
+                });
+
+                if (response.ok) {
+                    feedback.textContent = "Complaint submitted successfully!";
+                    feedback.className = "p-4 rounded-lg text-sm font-medium bg-green-50 text-green-700 block";
+                    form.reset();
+                    previewContainer.classList.add('hidden');
+                    wordCountDisplay.textContent = "0 / 500 words";
+                } else {
+                    throw new Error();
+                }
+            } catch (err) {
+                feedback.textContent = "Error submitting complaint. Please try again.";
+                feedback.className = "p-4 rounded-lg text-sm font-medium bg-red-50 text-red-700 block";
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Submit Complaint";
+            }
+        });
+    </script>
+</body>
+</html>
