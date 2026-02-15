@@ -138,13 +138,19 @@
             let body;
             let headers = {};
 
-            if (hasFile) {
-                body = new FormData(form);
-            } else {
-                const formData = new FormData(form);
-                body = JSON.stringify(Object.fromEntries(formData));
-                headers['Content-Type'] = 'application/json';
-            }
+          const formData = new FormData(form);
+
+            // Convert form to object
+            const data = Object.fromEntries(formData);
+
+            // Inject student info manually (until authentication is built)
+            data.studentName = "Abhishek Kumar";
+            data.rollNo = "210054010001";
+
+            // Always send JSON for now
+            body = JSON.stringify(data);
+            headers['Content-Type'] = 'application/json';
+
 
             try {
                 const response = await fetch('http://localhost:5000/api/submit-complaint', {
