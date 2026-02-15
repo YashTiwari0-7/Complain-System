@@ -143,9 +143,9 @@
             // Convert form to object
             const data = Object.fromEntries(formData);
 
-            // Inject student info manually (until authentication is built)
-            data.studentName = "Abhishek Kumar";
-            data.rollNo = "210054010001";
+            data.studentName = localStorage.getItem("studentName");
+            data.rollNo = localStorage.getItem("rollNo");
+
 
             // Always send JSON for now
             body = JSON.stringify(data);

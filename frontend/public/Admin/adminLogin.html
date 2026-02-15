@@ -87,7 +87,7 @@
 
                 if (response.ok) {
                     localStorage.setItem('adminId', adminId);
-                    window.location.href = 'admin-dashboard.html';
+                    window.location.href = "adminPortal.html";
                 } else {
                     showError(data.message || "Invalid credentials. Access denied.");
                 }

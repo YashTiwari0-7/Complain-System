@@ -23,7 +23,7 @@
                 <p>Access your grievance dashboard</p>
             </div>
 
-            <form action="authenticate.php" method="POST" class="login-form">
+            <form id="studentLoginForm" method="POST" class="login-form">
                 <div class="form-group">
                     <label for="rollno">University Roll Number</label>
                     <input type="text" id="rollno" name="rollno" placeholder="e.g. 2100540..." required>
@@ -53,11 +53,43 @@
         </div>
     </main>
 
-    <script>
-        function togglePass() {
-            const passField = document.getElementById('mobile');
-            passField.type = passField.type === 'password' ? 'text' : 'password';
-        }
-    </script>
+<script>
+    if (!localStorage.getItem("rollNo")) {
+  window.location.href = "studentLogin.html";
+}
+const form = document.getElementById("studentLoginForm");
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const rollNo = document.getElementById("rollno").value.trim();
+  const dob = document.getElementById("dob").value;
+  const mobile = document.getElementById("mobile").value.trim();
+
+  try {
+    const res = await fetch("http://localhost:5000/api/student-login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ rollNo, dob, mobile })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      // Save session data
+      localStorage.setItem("rollNo", data.student.rollNo);
+      localStorage.setItem("studentName", data.student.studentName);
+
+      window.location.href = "studentDashboard.html";
+    } else {
+      alert(data.message);
+    }
+
+  } catch (err) {
+    alert("Server connection error");
+  }
+});
+</script>
+
 </body>
 </html>
